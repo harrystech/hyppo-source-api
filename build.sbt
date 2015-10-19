@@ -2,6 +2,8 @@ organization := "com.harrys.hyppo"
 
 name := "source-api"
 
+version := "0.2.0"
+
 //  Don't export scala as a dependency (it's only for testing)
 autoScalaLibrary := false
 
