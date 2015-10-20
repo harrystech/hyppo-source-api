@@ -1,6 +1,6 @@
 package com.harrys.hyppo.source.api.task;
 
-import com.harrys.hyppo.source.api.RetryBehavior;
+import com.harrys.hyppo.source.api.PersistingSemantics;
 import org.apache.avro.specific.SpecificRecord;
 
 /**
@@ -14,7 +14,7 @@ public interface ProcessedDataPersister<T extends SpecificRecord> {
      * after a failure or restart.
      * @return The RetrySemantics enum value appropriate for this persister implementation.
      */
-    default RetryBehavior retrySemantics(){
-        return RetryBehavior.Default;
+    default PersistingSemantics retrySemantics(){
+        return PersistingSemantics.Default;
     }
 }
