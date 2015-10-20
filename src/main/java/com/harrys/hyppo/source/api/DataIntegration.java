@@ -24,4 +24,5 @@ public interface DataIntegration<T extends SpecificRecord> {
     TaskCreator newIngestionTaskCreator();
 
     ProcessedDataPersister<T> newDataPersister();
+
 }
