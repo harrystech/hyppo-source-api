@@ -2,7 +2,7 @@ organization := "com.harrys.hyppo"
 
 name := "source-api"
 
-version := "0.3.0-SNAPSHOT"
+version := "0.3.0"
 
 sonatypeProfileName := "com.harrys"
 

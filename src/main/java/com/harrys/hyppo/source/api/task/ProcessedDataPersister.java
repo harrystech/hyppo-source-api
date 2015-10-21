@@ -12,7 +12,7 @@ public interface ProcessedDataPersister<T extends SpecificRecord> {
     /**
      * The persister may specify that it guarantees idempotence, which may allow for persitence tasks to be retried
      * after a failure or restart.
-     * @return The RetrySemantics enum value appropriate for this persister implementation.
+     * @return The {@link PersistingSemantics} enum value appropriate for this persister implementation.
      */
     default PersistingSemantics retrySemantics(){
         return PersistingSemantics.Default;
