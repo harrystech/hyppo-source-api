@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Created by jpetty on 7/17/15.
  */
-public final class CreateTasksForJob {
+public final class CreateIngestionTasks {
 
     private static final Config sharedEmptyConfig = ConfigFactory.empty();
 
@@ -20,7 +20,7 @@ public final class CreateTasksForJob {
 
     private final TaskBuilder builder;
 
-    public CreateTasksForJob(final DataIngestionJob job){
+    public CreateIngestionTasks(final DataIngestionJob job){
         this.job      = job;
         this.builder  = new TaskBuilder();
     }
@@ -37,17 +37,17 @@ public final class CreateTasksForJob {
         return this.builder;
     }
 
-    public final CreateTasksForJob createTaskWithArgs(final Config arguments){
+    public final CreateIngestionTasks createTaskWithArgs(final Config arguments){
         this.builder.addTask(arguments);
         return this;
     }
 
-    public final CreateTasksForJob createTaskWithArgs(final Map<String, Object> arguments){
+    public final CreateIngestionTasks createTaskWithArgs(final Map<String, Object> arguments){
         final Config value = ConfigValueFactory.fromMap(arguments).toConfig();
         return this.createTaskWithArgs(value);
     }
 
-    public final CreateTasksForJob createTaskWithoutArgs(){
+    public final CreateIngestionTasks createTaskWithoutArgs(){
         return this.createTaskWithArgs(sharedEmptyConfig);
     }
 }

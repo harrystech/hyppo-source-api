@@ -5,7 +5,7 @@ import com.harrys.hyppo.source.api.model.DataIngestionTask;
 import com.harrys.hyppo.source.api.task.ProcessedDataPersister;
 import com.harrys.hyppo.source.api.model.DataIngestionJob;
 import com.harrys.hyppo.source.api.model.IngestionSource;
-import com.harrys.hyppo.source.api.task.TaskCreator;
+import com.harrys.hyppo.source.api.task.IngestionTaskCreator;
 import org.apache.avro.specific.SpecificRecord;
 
 /**
@@ -21,8 +21,8 @@ public interface DataIntegration<T extends SpecificRecord> {
 
     ValidationResult validateTaskArguments(final DataIngestionTask task);
 
-    TaskCreator newIngestionTaskCreator();
+    IngestionTaskCreator newIngestionTaskCreator();
 
-    ProcessedDataPersister<T> newDataPersister();
+    ProcessedDataPersister<T> newProcessedDataPersister();
 
 }
