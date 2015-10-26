@@ -2,6 +2,7 @@ package com.harrys.hyppo.source.api.task;
 
 import com.harrys.hyppo.source.api.model.TaskBuilder;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import com.harrys.hyppo.source.api.model.DataIngestionJob;
@@ -43,7 +44,12 @@ public final class CreateIngestionTasks {
     }
 
     public final CreateIngestionTasks createTaskWithArgs(final Map<String, Object> arguments){
-        final Config value = ConfigValueFactory.fromMap(arguments).toConfig();
+        final Config value;
+        try {
+            value = ConfigValueFactory.fromMap(arguments).toConfig();
+        } catch (ConfigException ce) {
+            throw new IllegalArgumentException("Can't create a Config object from arguments!", ce);
+        }
         return this.createTaskWithArgs(value);
     }
 

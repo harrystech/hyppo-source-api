@@ -1,5 +1,8 @@
 package com.harrys.hyppo.source.api;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
+
 /**
  * Created by jpetty on 10/20/15.
  */
@@ -16,4 +19,24 @@ public enum PersistingSemantics {
      * therefore not appropriate to respond to a failure by retrying.
      */
     Idempotent;
+
+
+    /**
+     * @return This method returns the same thing as {@link PersistingSemantics#name()} and is only defined so that the
+     * {@link JsonValue} annotation can be attached to it.
+     */
+    @JsonValue
+    public final String getJsonName(){
+        return this.name();
+    }
+
+    @JsonCreator
+    public static final PersistingSemantics fromString(final String name) {
+        for (final PersistingSemantics check : PersistingSemantics.values()){
+            if (check.name().equalsIgnoreCase(name)){
+                return check;
+            }
+        }
+        throw new IllegalArgumentException("Unknown " + PersistingSemantics.class.getName() + " type: " + name);
+    }
 }
