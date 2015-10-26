@@ -14,7 +14,7 @@ public interface ProcessedDataPersister<T extends SpecificRecord> {
      * after a failure or restart.
      * @return The {@link PersistingSemantics} enum value appropriate for this persister implementation.
      */
-    default PersistingSemantics retrySemantics(){
+    default PersistingSemantics semantics(){
         return PersistingSemantics.Default;
     }
 }
