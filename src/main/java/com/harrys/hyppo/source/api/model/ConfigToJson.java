@@ -18,12 +18,16 @@ import java.io.IOException;
 public final class ConfigToJson {
 
     public static final class Serializer extends JsonSerializer<Config> {
-        private static final ConfigRenderOptions renderOptions = ConfigRenderOptions.concise().setJson(true);
+        private static final ConfigRenderOptions renderOptions   = ConfigRenderOptions.concise().setJson(true);
+        private static final ConfigResolveOptions resolveOptions = ConfigResolveOptions.noSystem().setAllowUnresolved(false);
 
         public Serializer(){ }
 
         @Override
         public final void serialize(Config value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+            if (!value.isResolved()){
+                value = value.resolve(resolveOptions);
+            }
             final String jsonObject = value.root().render(renderOptions);
             jgen.writeRawValue(jsonObject);
         }
