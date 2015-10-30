@@ -15,6 +15,6 @@ public interface ProcessedDataPersister<T extends SpecificRecord> {
      * @return The {@link PersistingSemantics} enum value appropriate for this persister implementation.
      */
     default PersistingSemantics semantics(){
-        return PersistingSemantics.Default;
+        return PersistingSemantics.Unsafe;
     }
 }
