@@ -1,12 +1,12 @@
 package com.harrys.hyppo.source.api.task;
 
+import com.harrys.hyppo.source.api.model.DataIngestionJob;
+import com.harrys.hyppo.source.api.model.IngestionSource;
 import com.harrys.hyppo.source.api.model.TaskBuilder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
-import com.harrys.hyppo.source.api.model.DataIngestionJob;
-import com.harrys.hyppo.source.api.model.IngestionSource;
 
 import java.util.Map;
 

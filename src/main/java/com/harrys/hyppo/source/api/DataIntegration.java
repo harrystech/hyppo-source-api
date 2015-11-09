@@ -1,11 +1,12 @@
 package com.harrys.hyppo.source.api;
 
 import com.harrys.hyppo.source.api.data.AvroRecordType;
-import com.harrys.hyppo.source.api.model.DataIngestionTask;
-import com.harrys.hyppo.source.api.task.ProcessedDataPersister;
 import com.harrys.hyppo.source.api.model.DataIngestionJob;
+import com.harrys.hyppo.source.api.model.DataIngestionTask;
 import com.harrys.hyppo.source.api.model.IngestionSource;
+import com.harrys.hyppo.source.api.task.HandleJobCompleted;
 import com.harrys.hyppo.source.api.task.IngestionTaskCreator;
+import com.harrys.hyppo.source.api.task.ProcessedDataPersister;
 import org.apache.avro.specific.SpecificRecord;
 
 /**
@@ -24,5 +25,11 @@ public interface DataIntegration<T extends SpecificRecord> {
     IngestionTaskCreator newIngestionTaskCreator();
 
     ProcessedDataPersister<T> newProcessedDataPersister();
+
+    /**
+     * Allows the integration to handle application specific logic after completion of a job
+     * @param details The {@link HandleJobCompleted} instance containing relevant information about the job itself;
+     */
+    default void onJobCompleted(HandleJobCompleted details){}
 
 }
