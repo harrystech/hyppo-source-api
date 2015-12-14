@@ -1,6 +1,7 @@
 package com.harrys.hyppo.source.api.data;
 
 import org.apache.avro.Schema;
+import org.apache.avro.file.CodecFactory;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.specific.SpecificDatumReader;
@@ -53,24 +54,24 @@ public abstract class AvroRecordType<T extends SpecificRecord> {
         return (SpecificDatumReader<SpecificRecord>)reader;
     }
 
-    public final DataFileWriter<T> createFileWriter(final File outputFile) throws IOException {
-        return new DataFileWriter<>(this.createDatumWriter()).create(this.recordSchema(), outputFile);
+    public final DataFileWriter<T> createFileWriter(final File outputFile, final CodecFactory codec) throws IOException {
+        return new DataFileWriter<>(this.createDatumWriter()).setCodec(codec).create(this.recordSchema(), outputFile);
     }
 
     public final DataFileReader<T> createFileReader(final File inputFile) throws IOException {
         return new DataFileReader<T>(inputFile, this.createDatumReader());
     }
 
-    public final DataFileWriter<SpecificRecord> createGeneralFileWriter(final File outputFile) throws IOException {
-        return new DataFileWriter<SpecificRecord>(this.createGeneralDatumWriter()).create(this.recordSchema(), outputFile);
+    public final DataFileWriter<SpecificRecord> createGeneralFileWriter(final File outputFile, final CodecFactory codec) throws IOException {
+        return new DataFileWriter<SpecificRecord>(this.createGeneralDatumWriter()).setCodec(codec).create(this.recordSchema(), outputFile);
     }
 
     public final DataFileReader<SpecificRecord> createGeneralFileReader(final File inputFile) throws IOException {
         return new DataFileReader<SpecificRecord>(inputFile, this.createGeneralDatumReader());
     }
 
-    public final AvroRecordAppender<T> createAvroRecordAppender(final File inputFile) throws IOException {
-        return new AvroRecordAppender<>(this, inputFile);
+    public final AvroRecordAppender<T> createAvroRecordAppender(final File outputFile, final CodecFactory codec) throws IOException {
+        return new AvroRecordAppender<>(this, outputFile, codec);
     }
 
 

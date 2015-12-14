@@ -1,5 +1,6 @@
 package com.harrys.hyppo.source.api.data;
 
+import org.apache.avro.file.CodecFactory;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.specific.SpecificRecord;
 
@@ -20,11 +21,11 @@ public final class AvroRecordAppender<T extends SpecificRecord> {
 
     private final DataFileWriter<T> writer;
 
-    public AvroRecordAppender(final AvroRecordType<T> avroType, final File outputFile) throws IOException {
+    public AvroRecordAppender(final AvroRecordType<T> avroType, final File outputFile, final CodecFactory codec) throws IOException {
         this.avroType   = avroType;
         this.outputFile = outputFile;
         this.counter    = 0;
-        this.writer     = avroType.createFileWriter(outputFile);
+        this.writer     = avroType.createFileWriter(outputFile, codec);
     }
 
     public final AvroRecordType<T> getAvroType(){
