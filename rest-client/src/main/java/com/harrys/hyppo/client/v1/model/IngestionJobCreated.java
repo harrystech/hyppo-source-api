@@ -21,8 +21,29 @@ public final class IngestionJobCreated {
     }
 
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
     public UUID getJobId() {
         return jobId;
     }
 
+
+
+    public static final class Builder {
+        private UUID jobId;
+
+        private Builder() {
+        }
+
+        public Builder withJobId(final UUID val) {
+            jobId = val;
+            return this;
+        }
+
+        public IngestionJobCreated build() {
+            return new IngestionJobCreated(jobId);
+        }
+    }
 }

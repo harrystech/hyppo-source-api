@@ -27,11 +27,12 @@ public final class CreateIngestionJob {
             @JsonProperty("parameters") final Config parameters
     ) {
         this.sourceName = sourceName;
-        if (parameters == null){
-            this.parameters = ConfigFactory.empty();
-        } else {
-            this.parameters = parameters;
-        }
+        this.parameters = parameters;
+    }
+
+    private CreateIngestionJob(Builder builder){
+        this.sourceName = builder.sourceName;
+        this.parameters = builder.parameters;
     }
 
     public String getSourceName() {
@@ -39,31 +40,37 @@ public final class CreateIngestionJob {
     }
 
     public Config getParameters() {
-        return parameters;
+        if (parameters == null){
+            return ConfigFactory.empty();
+        } else {
+            return parameters;
+        }
     }
 
     public static Builder newBuilder() {
         return new Builder();
     }
 
-    public static class Builder {
+
+    public static final class Builder {
         private String sourceName;
         private Config parameters;
 
-        public Builder() {}
+        private Builder() {
+        }
 
-        public Builder withSourceName(String sourceName) {
-            this.sourceName = sourceName;
+        public Builder withSourceName(String val) {
+            sourceName = val;
             return this;
         }
 
-        public Builder withParameters(Config parameters) {
-            this.parameters = parameters;
+        public Builder withParameters(Config val) {
+            parameters = val;
             return this;
         }
 
         public CreateIngestionJob build() {
-            return new CreateIngestionJob(sourceName, parameters);
+            return new CreateIngestionJob(this);
         }
     }
 }
