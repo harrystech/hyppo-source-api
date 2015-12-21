@@ -1,14 +1,10 @@
 
 organization := "com.harrys.hyppo"
 
-name := "hyppo-rest-client"
+name := "rest-client"
 
 //  Bring in shared SBT configurations from project root
 Common.buildSettings
-
-crossPaths        := false
-
-autoScalaLibrary  := false
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.0",

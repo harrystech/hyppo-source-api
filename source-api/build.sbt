@@ -6,10 +6,6 @@ name := "source-api"
 //  Bring in shared SBT configurations from project root
 Common.buildSettings
 
-crossPaths        := false
-
-autoScalaLibrary  := false
-
 libraryDependencies ++= Seq(
   "com.typesafe"    %  "config" % "1.3.0",  // Configuration API
   "org.apache.avro" %  "avro"   % "1.7.7"   // Record Serialization API

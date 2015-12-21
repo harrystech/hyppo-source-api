@@ -13,8 +13,7 @@ lazy val `rest-client` = project.in(file("rest-client"))
 lazy val root = project.in(file("."))
   .aggregate(`source-api`, `rest-client`)
   .settings(
-    publishArtifact := false,
-    aggregate in Test := true
+    publishArtifact := false
   )
 
 
