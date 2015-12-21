@@ -3,7 +3,6 @@ package com.harrys.hyppo.client.v1;
 import com.harrys.hyppo.client.v1.error.InvalidHyppoRequest;
 import com.harrys.hyppo.client.v1.model.CreateIngestionJob;
 import com.harrys.hyppo.client.v1.model.IngestionJobCreated;
-import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
@@ -57,23 +56,36 @@ public final class HyppoApiClient {
         }
 
         public final T handleResponse(final CloseableHttpResponse response) throws IOException {
-            final HttpEntity entity = response.getEntity();
             try {
-                if (ContentType.getLenientOrDefault(entity) == ContentType.APPLICATION_JSON){
-                    return successHandler.handleResponse(response);
-                } else {
-                    final String strValue = EntityUtils.toString(entity);
-                    throw new InvalidHyppoRequest(Arrays.asList(strValue));
-                }
+                return successHandler.handleResponse(response);
             } catch (JsonMappingException jme) {
                 if (response.getEntity().isRepeatable()){
-                    final InvalidHyppoRequest invalid = tryInvalidRequest(response);
+                    InvalidHyppoRequest invalid = tryInvalidRequest(response);
                     if (invalid != null){
                         throw invalid;
                     }
                 }
                 throw jme;
+            } catch (JsonProcessingException jpe){
+                if (response.getEntity().isRepeatable()){
+                    InvalidHyppoRequest invalid = tryTextResponse(response);
+                    if (invalid != null){
+                        throw invalid;
+                    }
+                }
+                throw jpe;
             }
+        }
+
+        private InvalidHyppoRequest tryTextResponse(final CloseableHttpResponse response) {
+            if (ContentType.getLenientOrDefault(response.getEntity()) == ContentType.TEXT_PLAIN){
+                try {
+                    return new InvalidHyppoRequest(Arrays.asList(EntityUtils.toString(response.getEntity())));
+                } catch (IOException ioe){
+                    log.warn("Unexpected IOException while attempting to parse as text", ioe);
+                }
+            }
+            return null;
         }
 
         private InvalidHyppoRequest tryInvalidRequest(final CloseableHttpResponse response) {
