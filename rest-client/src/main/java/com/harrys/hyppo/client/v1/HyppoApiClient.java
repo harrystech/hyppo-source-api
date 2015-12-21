@@ -3,7 +3,10 @@ package com.harrys.hyppo.client.v1;
 import com.harrys.hyppo.client.v1.error.InvalidHyppoRequest;
 import com.harrys.hyppo.client.v1.model.CreateIngestionJob;
 import com.harrys.hyppo.client.v1.model.IngestionJobCreated;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.entity.ContentType;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -11,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by jpetty on 12/18/15.
@@ -53,8 +57,14 @@ public final class HyppoApiClient {
         }
 
         public final T handleResponse(final CloseableHttpResponse response) throws IOException {
+            final HttpEntity entity = response.getEntity();
             try {
-                return successHandler.handleResponse(response);
+                if (ContentType.getLenientOrDefault(entity) == ContentType.APPLICATION_JSON){
+                    return successHandler.handleResponse(response);
+                } else {
+                    final String strValue = EntityUtils.toString(entity);
+                    throw new InvalidHyppoRequest(Arrays.asList(strValue));
+                }
             } catch (JsonMappingException jme) {
                 if (response.getEntity().isRepeatable()){
                     final InvalidHyppoRequest invalid = tryInvalidRequest(response);
