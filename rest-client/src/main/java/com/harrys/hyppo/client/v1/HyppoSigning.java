@@ -1,19 +1,15 @@
 package com.harrys.hyppo.client.v1;
 
 import org.apache.http.Header;
-import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicHeader;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 
 /**
  * Created by jpetty on 12/18/15.
@@ -39,35 +35,16 @@ public final class HyppoSigning {
         return new BasicHeader(SignatureHeaderName, Base64.getEncoder().encodeToString(signature));
     }
 
-
-    public static byte[] computeSignature(
-            final SecretKeySpec key,
-            final String keyName,
-            final long timestamp,
-            final String method,
-            final String path,
-            final List<NameValuePair> params,
-            final byte[] body) {
-
-        final Mac mac = initializeMac(key);
-        mac.update(keyName.getBytes(StandardCharsets.UTF_8));
-        mac.update(Long.toString(timestamp).getBytes(StandardCharsets.UTF_8));
-
-        mac.update(method.toUpperCase().getBytes(StandardCharsets.UTF_8));
-        mac.update(path.getBytes(StandardCharsets.UTF_8));
-
-        final List<NameValuePair> paramList = new ArrayList<>(params);
-        paramList.sort((a, b) -> a.getName().compareTo(b.getName()));
-
-        for (final NameValuePair param : paramList){
-            mac.update(param.getName().getBytes(StandardCharsets.UTF_8));
-            mac.update(param.getValue().getBytes(StandardCharsets.UTF_8));
-        }
-
-        return mac.doFinal(body);
+    public static  RequestDigest.Builder newRequestDigestBuilder(final HyppoClientConfig config){
+        return RequestDigest.newBuilder(config.getKeyName(), initializeMac(config));
     }
 
-    public static Mac initializeMac(final SecretKeySpec key){
+
+    public static  RequestDigest.Builder newRequestDigestBuilder(final String keyName, final SecretKeySpec key){
+        return RequestDigest.newBuilder(keyName, initializeMac(key));
+    }
+
+    private static Mac initializeMac(final SecretKeySpec key){
         try {
             final Mac mac = Mac.getInstance(SigningAlgorithm);
             mac.init(key);
@@ -79,7 +56,7 @@ public final class HyppoSigning {
         }
     }
 
-    public static Mac initializeMac(final HyppoClientConfig config) {
+    private static Mac initializeMac(final HyppoClientConfig config) {
         return initializeMac(config.getKeySecret());
     }
 

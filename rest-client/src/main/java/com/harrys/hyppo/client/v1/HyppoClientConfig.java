@@ -35,23 +35,23 @@ public final class HyppoClientConfig {
     }
 
 
-    public URI getBaseURI() {
+    public final URI getBaseURI() {
         return baseURI;
     }
 
-    public SecretKeySpec getKeySecret() {
+    public final SecretKeySpec getKeySecret() {
         return keySecret;
     }
 
-    public String getKeyName() {
+    public final String getKeyName() {
         return keyName;
     }
 
-    public Duration getConnectTimeout() {
+    public final Duration getConnectTimeout() {
         return connectTimeout;
     }
 
-    public Duration getSocketTimeout() {
+    public final Duration getSocketTimeout() {
         return socketTimeout;
     }
 

@@ -4,7 +4,6 @@ import com.harrys.hyppo.client.v1.error.InvalidHyppoRequest;
 import com.harrys.hyppo.client.v1.model.CreateIngestionJob;
 import com.harrys.hyppo.client.v1.model.IngestionJobCreated;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -78,14 +77,12 @@ public final class HyppoApiClient {
         }
 
         private InvalidHyppoRequest tryTextResponse(final CloseableHttpResponse response) {
-            if (ContentType.getLenientOrDefault(response.getEntity()) == ContentType.TEXT_PLAIN){
-                try {
-                    return new InvalidHyppoRequest(Arrays.asList(EntityUtils.toString(response.getEntity())));
-                } catch (IOException ioe){
-                    log.warn("Unexpected IOException while attempting to parse as text", ioe);
-                }
+            try {
+                return new InvalidHyppoRequest(Arrays.asList(EntityUtils.toString(response.getEntity())));
+            } catch (IOException ioe){
+                log.warn("Unexpected IOException while attempting to parse as text", ioe);
+                return null;
             }
-            return null;
         }
 
         private InvalidHyppoRequest tryInvalidRequest(final CloseableHttpResponse response) {
