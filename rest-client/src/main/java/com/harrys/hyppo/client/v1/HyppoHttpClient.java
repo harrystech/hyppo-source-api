@@ -91,12 +91,17 @@ public final class HyppoHttpClient {
 
 
     private void attachSignature(final HttpUriRequest request, final List<NameValuePair> params, final byte[] content) {
-        final long timestamp   = Instant.now(Clock.systemUTC()).toEpochMilli();
-        final byte[] signature = HyppoSigning.computeSignature(config.getKeySecret(), config.getKeyName(), timestamp, request.getMethod(), request.getURI().getPath(), params, content);
-
-        request.addHeader(HyppoSigning.signingKeyNameHeader(config.getKeyName()));
-        request.addHeader(HyppoSigning.timestampHeader(timestamp));
-        request.addHeader(HyppoSigning.signatureHeader(signature));
+        final RequestDigestBuffer digest =
+                RequestDigestBuffer.newBuilder(config)
+                    .withMethod(request.getMethod())
+                    .withPath(request.getURI().getPath())
+                    .withQueryParams(params)
+                    .withTimestamp(Instant.now(Clock.systemUTC()).toEpochMilli())
+                    .build();
+        final byte[] signature = digest.doFinal(content);
+        for (final Header h : digest.requestHeaders(signature)){
+            request.addHeader(h);
+        }
     }
 
 
