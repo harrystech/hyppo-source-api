@@ -36,7 +36,7 @@ public final class RequestDigestBuffer {
     private final List<NameValuePair> queryParams;
 
     private RequestDigestBuffer(Builder builder) {
-        this.mac         = initializeMac(builder.key);
+        this.mac         = instantiateMac(builder.key);
         this.keyName     = builder.keyName;
         this.timestamp   = builder.timestamp;
         this.method      = builder.method;
@@ -44,6 +44,19 @@ public final class RequestDigestBuffer {
         this.queryParams = new ArrayList<>(builder.queryParams);
         this.queryParams.sort(paramOrder);
         prepareForContent();
+    }
+
+    private void prepareForContent(){
+        mac.update(keyName.getBytes(StandardCharsets.UTF_8));
+        mac.update(Long.toString(timestamp).getBytes(StandardCharsets.UTF_8));
+
+        mac.update(method.toUpperCase().getBytes(StandardCharsets.UTF_8));
+        mac.update(path.getBytes(StandardCharsets.UTF_8));
+
+        for (final NameValuePair param : queryParams){
+            mac.update(param.getName().getBytes(StandardCharsets.UTF_8));
+            mac.update(param.getValue().getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     public final Header signingKeyNameHeader(){
@@ -99,17 +112,8 @@ public final class RequestDigestBuffer {
         return mac.doFinal(bytes);
     }
 
-    private void prepareForContent(){
-        mac.update(keyName.getBytes(StandardCharsets.UTF_8));
-        mac.update(Long.toString(timestamp).getBytes(StandardCharsets.UTF_8));
-
-        mac.update(method.toUpperCase().getBytes(StandardCharsets.UTF_8));
-        mac.update(path.getBytes(StandardCharsets.UTF_8));
-
-        for (final NameValuePair param : queryParams){
-            mac.update(param.getName().getBytes(StandardCharsets.UTF_8));
-            mac.update(param.getValue().getBytes(StandardCharsets.UTF_8));
-        }
+    public final Mac getMacInstance(){
+        return this.mac;
     }
 
     public static Builder newBuilder(final String keyName, final SecretKeySpec key){
@@ -130,7 +134,7 @@ public final class RequestDigestBuffer {
         }
     };
 
-    private static Mac initializeMac(final SecretKeySpec key){
+    private static Mac instantiateMac(final SecretKeySpec key){
         try {
             final Mac mac = Mac.getInstance(HyppoSigning.SigningAlgorithm);
             mac.init(key);

@@ -25,22 +25,38 @@ public final class HyppoSigning {
         return new BasicHeader(KeyNameHeaderName, keyName);
     }
 
-    public static Header timestampHeader(long timestamp){
+    public static Header timestampHeader(final long timestamp){
         return new BasicHeader(TimestampHeaderName, Long.toString(timestamp));
     }
 
-    public static Header signatureHeader(byte[] signature){
-        return new BasicHeader(SignatureHeaderName, Base64.getEncoder().encodeToString(signature));
+    public static Header signatureHeader(final byte[] signature){
+        return new BasicHeader(SignatureHeaderName, encodeSignature(signature));
+    }
+
+    public static String encodeSignature(final byte[] signature){
+        return encodeBase64(signature);
+    }
+
+    public static byte[] decodeSignature(final String encodedSignature){
+        return decodeBase64(encodedSignature);
+    }
+
+    public static String encodeBase64(final byte[] signature){
+        return Base64.getEncoder().encodeToString(signature);
+    }
+
+    public static byte[] decodeBase64(final String base64){
+        return Base64.getDecoder().decode(base64);
     }
 
 
     public static SecretKeySpec decodeSecretKey(final String encodedKey){
-        final byte[] bytes = Base64.getDecoder().decode(encodedKey);
+        final byte[] bytes = decodeBase64(encodedKey);
         return new SecretKeySpec(bytes, SigningAlgorithm);
     }
 
     public static String encodeSecretKey(final SecretKeySpec key){
-        return Base64.getEncoder().encodeToString(key.getEncoded());
+        return encodeBase64(key.getEncoded());
     }
 
     public static SecretKeySpec generateRandomKey(){
