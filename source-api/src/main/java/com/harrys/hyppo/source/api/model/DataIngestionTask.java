@@ -56,6 +56,10 @@ public final class DataIngestionTask implements Serializable {
         return taskArguments;
     }
 
+    @JsonIgnore
+    public final DataIngestionTask cloneWithJob(final DataIngestionJob job) {
+        return new DataIngestionTask(job, taskNumber, taskArguments);
+    }
 
     @Override
     public final boolean equals(Object check){
