@@ -1,7 +1,7 @@
 package com.harrys.hyppo.client.v1.model;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.UUID;
 
@@ -21,15 +21,13 @@ public final class IngestionJobCreated {
     }
 
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     public UUID getJobId() {
         return jobId;
     }
 
-
+    public static Builder newBuilder() {
+        return new Builder();
+    }
 
     public static final class Builder {
         private UUID jobId;

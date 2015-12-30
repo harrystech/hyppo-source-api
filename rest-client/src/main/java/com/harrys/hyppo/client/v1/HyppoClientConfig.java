@@ -25,6 +25,8 @@ public final class HyppoClientConfig {
 
     private final Duration socketTimeout;
 
+    private final long maxBufferSize;
+
     public HyppoClientConfig(final Config config){
         this.underlying = config.withFallback(referenceConfig()).resolve();
         this.keyName    = underlying.getString("hyppo.client.key-name");
@@ -32,6 +34,7 @@ public final class HyppoClientConfig {
         this.baseURI    = URI.create(underlying.getString("hyppo.client.service-uri"));
         this.connectTimeout = underlying.getDuration("hyppo.client.connect-timeout");
         this.socketTimeout  = underlying.getDuration("hyppo.client.socket-timeout");
+        this.maxBufferSize  = underlying.getMemorySize("hyppo.client.max-buffer-size").toBytes();
     }
 
 
@@ -53,6 +56,10 @@ public final class HyppoClientConfig {
 
     public final Duration getSocketTimeout() {
         return socketTimeout;
+    }
+
+    public final long getMaxBufferSize(){
+        return maxBufferSize;
     }
 
     public final Config underlying() {

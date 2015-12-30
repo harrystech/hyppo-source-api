@@ -1,7 +1,7 @@
 package com.harrys.hyppo.client.v1.error;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,12 @@ public final class InvalidHyppoRequest extends HyppoClientException {
     public InvalidHyppoRequest(
             @JsonProperty("messages") final List<String> messages
     ){
-        this.messages = messages;
+        this.messages = new ArrayList<>(messages);
+    }
+
+    public InvalidHyppoRequest(final String message){
+        this.messages = new ArrayList<>(1);
+        this.messages.add(message);
     }
 
     private InvalidHyppoRequest(Builder builder) {

@@ -5,11 +5,15 @@ import com.harrys.hyppo.source.api.model.DataIngestionJob;
 import com.harrys.hyppo.source.api.model.DataIngestionTask;
 import com.harrys.hyppo.source.api.task.CreateIngestionTasks;
 import com.harrys.hyppo.source.api.task.FetchProcessedData;
+import com.harrys.hyppo.source.api.task.HandleJobCompleted;
 import com.harrys.hyppo.source.api.task.PersistProcessedData;
 import org.apache.avro.specific.SpecificRecord;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by pettyjamesm on 12/28/15.
@@ -38,6 +42,11 @@ public final class ProcessedDataTestOperations<R extends SpecificRecord> {
 
     public final PersistProcessedData<R> persistProcessedDataOperation(final DataIngestionTask task, final File avroFile) {
         return new PersistProcessedData<>(task.cloneWithJob(job), integration.avroType(), avroFile);
+    }
+
+    public final HandleJobCompleted handleJobCompletedOperation(final LocalDateTime completedAt, final List<DataIngestionTask> tasks) {
+        final List<DataIngestionTask> jobFixed = tasks.stream().map(t -> t.cloneWithJob(job)).collect(Collectors.toList());
+        return new HandleJobCompleted(completedAt, job, jobFixed);
     }
 
     public final void cleanupOutputFiles() {

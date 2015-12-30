@@ -1,15 +1,17 @@
 package com.harrys.hyppo.client.v1.model;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by jpetty on 12/21/15.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class WorkResource {
 
     @JsonProperty("id")
-    private final int id;
+    private final Integer id;
 
     @JsonProperty("name")
     private final String name;
@@ -18,14 +20,14 @@ public final class WorkResource {
     private final String type;
 
     @JsonProperty("metric")
-    private final int metric;
+    private final Integer metric;
 
     @JsonCreator
     public WorkResource(
-            @JsonProperty("id")     final int id,
-            @JsonProperty("name")   final String name,
-            @JsonProperty("type")   final String type,
-            @JsonProperty("metric") final int metric
+            @JsonProperty("id")     final Integer id,
+            @JsonProperty("name")   final String  name,
+            @JsonProperty("type")   final String  type,
+            @JsonProperty("metric") final Integer metric
     ) {
         this.id = id;
         this.name = name;
@@ -40,11 +42,7 @@ public final class WorkResource {
         metric = builder.metric;
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -56,16 +54,19 @@ public final class WorkResource {
         return type;
     }
 
-    public int getMetric() {
+    public Integer getMetric() {
         return metric;
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
 
     public static final class Builder {
-        private int id;
+        private Integer id;
         private String name;
         private String type;
-        private int metric;
+        private Integer metric;
 
         private Builder() {
         }

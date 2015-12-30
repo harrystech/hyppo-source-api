@@ -13,10 +13,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by jpetty on 12/22/15.
@@ -41,8 +38,8 @@ public final class RequestDigestBuffer {
         this.timestamp   = builder.timestamp;
         this.method      = builder.method;
         this.path        = builder.path;
-        this.queryParams = new ArrayList<>(builder.queryParams);
-        this.queryParams.sort(paramOrder);
+        this.queryParams = prepareQueryParams(builder.queryParams);
+
         prepareForContent();
     }
 
@@ -80,7 +77,9 @@ public final class RequestDigestBuffer {
     }
 
     public final void update(final byte[] bytes){
-        mac.update(bytes);
+        if (bytes.length > 0){
+            mac.update(bytes);
+        }
     }
 
     public final void update(final byte b){
@@ -109,7 +108,11 @@ public final class RequestDigestBuffer {
     }
 
     public final byte[] doFinal(final byte[] bytes){
-        return mac.doFinal(bytes);
+        if (bytes.length > 0){
+            return mac.doFinal(bytes);
+        } else {
+            return mac.doFinal();
+        }
     }
 
     public final Mac getMacInstance(){
@@ -146,6 +149,12 @@ public final class RequestDigestBuffer {
         }
     }
 
+    private static List<NameValuePair> prepareQueryParams(final List<NameValuePair> params) {
+        final List<NameValuePair> output = (params == null) ? new ArrayList<>() : new ArrayList<>(params);
+        output.sort(paramOrder);
+        return Collections.unmodifiableList(output);
+    }
+
 
     public static final class Builder {
         private String keyName;
@@ -176,7 +185,7 @@ public final class RequestDigestBuffer {
         }
 
         public Builder withQueryParams(List<NameValuePair> val) {
-            queryParams = val;
+            queryParams = new ArrayList<>(val);
             return this;
         }
 

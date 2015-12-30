@@ -22,4 +22,9 @@ public class HyppoClientException extends IOException {
     public HyppoClientException(final String message, final Throwable cause){
         super(message, cause);
     }
+
+    @Override
+    public String toString(){
+        return this.getClass().getName() + ": " + this.getMessage();
+    }
 }

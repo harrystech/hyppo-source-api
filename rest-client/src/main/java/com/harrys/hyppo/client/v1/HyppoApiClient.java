@@ -1,25 +1,23 @@
 package com.harrys.hyppo.client.v1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.harrys.hyppo.client.v1.error.InvalidHyppoRequest;
 import com.harrys.hyppo.client.v1.model.CreateIngestionJob;
 import com.harrys.hyppo.client.v1.model.IngestionJobCreated;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by jpetty on 12/18/15.
  */
 public final class HyppoApiClient {
     private static final Logger log = LoggerFactory.getLogger(HyppoApiClient.class);
-
 
     private final HyppoHttpClient http;
 
@@ -58,9 +56,9 @@ public final class HyppoApiClient {
             try {
                 return successHandler.handleResponse(response);
             } catch (JsonMappingException jme) {
-                if (response.getEntity().isRepeatable()){
+                if (response.getEntity().isRepeatable()) {
                     InvalidHyppoRequest invalid = tryInvalidRequest(response);
-                    if (invalid != null){
+                    if (invalid != null) {
                         throw invalid;
                     }
                 }
@@ -78,7 +76,7 @@ public final class HyppoApiClient {
 
         private InvalidHyppoRequest tryTextResponse(final CloseableHttpResponse response) {
             try {
-                return new InvalidHyppoRequest(Arrays.asList(EntityUtils.toString(response.getEntity())));
+                return new InvalidHyppoRequest(EntityUtils.toString(response.getEntity()));
             } catch (IOException ioe){
                 log.warn("Unexpected IOException while attempting to parse as text", ioe);
                 return null;

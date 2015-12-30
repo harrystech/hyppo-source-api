@@ -11,5 +11,7 @@ libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.4",
   "org.slf4j" % "slf4j-api" % "1.7.13",
   "org.apache.httpcomponents" % "httpclient" % "4.5.1",
-  "com.harrys.hyppo" % "source-api" % Common.hyppoVersion
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.2",
+  //  The exclusion of jackson here is necessary to standardize on the jackson 2 annotations
+  "com.harrys.hyppo" % "source-api" % Common.hyppoVersion excludeAll ExclusionRule(organization = "org.codehaus.jackson")
 )

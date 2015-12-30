@@ -7,11 +7,13 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +77,12 @@ public final class HyppoHttpClient {
         final CloseableHttpClient client = createClientInstance();
         try {
             final CloseableHttpResponse response = client.execute(request);
+            //  Wrap the response in a buffer to facilitate error handlers re-playing the content if the response
+            //  size is smaller than the max allowable buffer
+            if (response.getEntity().getContentLength() >= 0 && response.getEntity().getContentLength() < config.getMaxBufferSize()) {
+                EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+            }
+
             try {
                 log.debug("{} - {} : {}", request.getMethod(), request.getURI().getPath(), response.getStatusLine().getStatusCode());
                 return handler.handleResponse(response);
@@ -82,7 +90,7 @@ public final class HyppoHttpClient {
                 IOUtils.closeQuietly(response);
             }
         } catch (Exception e) {
-            log.error("{} - {} : FAILED", request.getMethod(), request.getURI().getPath(), e);
+            log.error("{} - {} : FAILED - {}", request.getMethod(), request.getURI().getPath(), e.toString());
             throw e;
         } finally {
             IOUtils.closeQuietly(client);

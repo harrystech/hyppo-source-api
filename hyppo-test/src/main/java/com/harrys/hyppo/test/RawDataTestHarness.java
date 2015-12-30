@@ -8,7 +8,8 @@ import com.harrys.hyppo.source.api.task.*;
 import org.apache.avro.specific.SpecificRecord;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -27,36 +28,35 @@ public abstract class RawDataTestHarness<T extends SpecificRecord> implements Ca
         this.operations  = new RawDataTestOperations<>(integration, job, root);
     }
 
-
-
     @Override
     public Void call() throws Exception {
         //  Since it's fairly common for these tasks creations to include stripped DataIngestionJob instances,
         //  we force-reassign it here.
-        final List<DataIngestionTask> tasks = createIngestionTasks(operations.createIngestionTasksOperation()).stream()
-                .map(t -> t.cloneWithJob(operations.getJob()))
+        final List<DataIngestionTask> tasks   = createIngestionTasks(operations.createIngestionTasksOperation()).stream()
+                .map(t -> t.cloneWithJob(operations.getJob())).collect(Collectors.toList());
+        final List<MutableTaskDetail> details = tasks.stream()
+                .map(MutableTaskDetail::new)
                 .collect(Collectors.toList());
 
-        final List<DataIngestionTaskWithRawFiles> taskRawFiles = new ArrayList<>();
-        for (DataIngestionTask task : tasks){
-            final List<File> files = fetchRawData(operations.fetchRawDataOperation(task));
-            taskRawFiles.add(new DataIngestionTaskWithRawFiles(task, files));
+        for (MutableTaskDetail taskDetail : details){
+            final List<File> files = fetchRawData(operations.fetchRawDataOperation(taskDetail.getTask()));
+            taskDetail.setRawDataFiles(files);
         }
 
-        final List<DataIngestionTaskWithAvroFile<T>> taskAvro = new ArrayList<>();
-        for (DataIngestionTaskWithRawFiles rawTask : taskRawFiles){
-            final DataIngestionTask task          = rawTask.getTask();
-            final AvroRecordAppender<T> appender  = operations.createAvroRecordAppender(task);
-            for (ProcessRawData<T> operation : operations.processRawDataOperations(task, rawTask.getRawDataFiles(), appender)){
+        for (MutableTaskDetail taskDetail : details){
+            final AvroRecordAppender<T> appender = operations.createAvroRecordAppender(taskDetail.getTask());
+            for (ProcessRawData<T> operation : operations.processRawDataOperations(taskDetail.getTask(), taskDetail.getRawDataFiles(), appender)){
                 processRawData(operation);
                 appender.close();
             }
-            taskAvro.add(new DataIngestionTaskWithAvroFile<>(task, appender));
+            taskDetail.setAvroDataFile(appender.getOutputFile());
         }
 
-        for (DataIngestionTaskWithAvroFile<T> avroTask : taskAvro){
-            persistProcessedData(operations.persistProcessedDataOperation(avroTask.getTask(), avroTask.getAvroAppender().getOutputFile()));
+        for (MutableTaskDetail taskDetail : details){
+            persistProcessedData(operations.persistProcessedDataOperation(taskDetail.getTask(), taskDetail.getAvroDataFile()));
         }
+
+        onJobCompleted(operations.handleJobCompletedOperation(LocalDateTime.now(Clock.systemUTC()), tasks));
 
         return null;
     }
@@ -78,5 +78,14 @@ public abstract class RawDataTestHarness<T extends SpecificRecord> implements Ca
 
     protected void persistProcessedData(final PersistProcessedData<T> operation) throws Exception {
         integration.newProcessedDataPersister().persistProcessedData(operation);
+    }
+
+    protected void onJobCompleted(final HandleJobCompleted operation) throws Exception {
+        integration.onJobCompleted(operation);
+    }
+
+
+    public void cleanupOutputFiles() {
+        operations.cleanupOutputFiles();
     }
 }

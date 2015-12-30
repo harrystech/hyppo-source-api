@@ -1,12 +1,12 @@
 package com.harrys.hyppo.client.v1.model;
 
-import com.harrys.hyppo.source.api.model.ConfigToJson;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 
 /**
  * Created by jpetty on 12/18/15.
@@ -17,8 +17,8 @@ public final class CreateIngestionJob {
     private final String sourceName;
 
     @JsonProperty("parameters")
-    @JsonDeserialize(using = ConfigToJson.Deserializer.class)
-    @JsonSerialize(using = ConfigToJson.Serializer.class)
+    @JsonDeserialize(using = Jackson2ConfigToJson.Jackson2Deserializer.class)
+    @JsonSerialize(using = Jackson2ConfigToJson.Jackson2Serializer.class)
     private final Config parameters;
 
     @JsonCreator

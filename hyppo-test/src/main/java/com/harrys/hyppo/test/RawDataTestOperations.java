@@ -4,14 +4,12 @@ import com.harrys.hyppo.source.api.RawDataIntegration;
 import com.harrys.hyppo.source.api.data.AvroRecordAppender;
 import com.harrys.hyppo.source.api.model.DataIngestionJob;
 import com.harrys.hyppo.source.api.model.DataIngestionTask;
-import com.harrys.hyppo.source.api.task.CreateIngestionTasks;
-import com.harrys.hyppo.source.api.task.FetchRawData;
-import com.harrys.hyppo.source.api.task.PersistProcessedData;
-import com.harrys.hyppo.source.api.task.ProcessRawData;
+import com.harrys.hyppo.source.api.task.*;
 import org.apache.avro.specific.SpecificRecord;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +47,11 @@ public final class RawDataTestOperations<T extends SpecificRecord> {
 
     public final PersistProcessedData<T> persistProcessedDataOperation(final DataIngestionTask task, final File avroFile) {
         return new PersistProcessedData<T>(task.cloneWithJob(job), integration.avroType(), avroFile);
+    }
+
+    public final HandleJobCompleted handleJobCompletedOperation(final LocalDateTime completedAt, final List<DataIngestionTask> tasks) {
+        final List<DataIngestionTask> jobFixed = tasks.stream().map(t -> t.cloneWithJob(job)).collect(Collectors.toList());
+        return new HandleJobCompleted(completedAt, job, jobFixed);
     }
 
     public final AvroRecordAppender<T> createAvroRecordAppender(final DataIngestionTask task) throws IOException {
