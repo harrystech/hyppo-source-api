@@ -21,11 +21,14 @@ public final class Jackson2ConfigToJson {
         private static final ConfigResolveOptions resolveOptions = ConfigResolveOptions.noSystem().setAllowUnresolved(false);
 
         @Override
-        public final void serialize(Config value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
-            if (!value.isResolved()){
-                value = value.resolve(resolveOptions);
+        public final void serialize(final Config value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
+            final Config resolved;
+            if (value.isResolved()){
+                resolved = value;
+            } else {
+                resolved = value.resolve(resolveOptions);
             }
-            final String jsonObject = value.root().render(renderOptions);
+            final String jsonObject = resolved.root().render(renderOptions);
             jgen.writeRawValue(jsonObject);
         }
     }

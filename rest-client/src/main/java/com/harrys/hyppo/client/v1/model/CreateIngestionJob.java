@@ -35,11 +35,11 @@ public final class CreateIngestionJob {
         this.parameters = builder.parameters;
     }
 
-    public String getSourceName() {
+    public final String getSourceName() {
         return sourceName;
     }
 
-    public Config getParameters() {
+    public final Config getParameters() {
         if (parameters == null){
             return ConfigFactory.empty();
         } else {
@@ -59,17 +59,17 @@ public final class CreateIngestionJob {
         private Builder() {
         }
 
-        public Builder withSourceName(String val) {
+        public final Builder withSourceName(String val) {
             sourceName = val;
             return this;
         }
 
-        public Builder withParameters(Config val) {
+        public final Builder withParameters(Config val) {
             parameters = val;
             return this;
         }
 
-        public CreateIngestionJob build() {
+        public final CreateIngestionJob build() {
             return new CreateIngestionJob(this);
         }
     }

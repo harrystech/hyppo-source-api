@@ -3,7 +3,7 @@ import Keys._
 
 
 object Common {
-  final val hyppoVersion  = "0.6.3-SNAPSHOT"
+  final val hyppoVersion  = "0.6.3"
 
   final val buildSettings = Seq(
     crossPaths        := false,

@@ -1,8 +1,10 @@
 package com.harrys.hyppo.client.v1;
 
+import com.harrys.hyppo.client.v1.error.HyppoAuthException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
@@ -81,6 +83,11 @@ public final class HyppoHttpClient {
             //  size is smaller than the max allowable buffer
             if (response.getEntity().getContentLength() >= 0 && response.getEntity().getContentLength() < config.getMaxBufferSize()) {
                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+            }
+
+            //  Explicit check for the authorization status of the API key
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+                throw new HyppoAuthException(config);
             }
 
             try {

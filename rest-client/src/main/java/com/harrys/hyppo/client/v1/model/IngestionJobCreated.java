@@ -21,7 +21,7 @@ public final class IngestionJobCreated {
     }
 
 
-    public UUID getJobId() {
+    public final UUID getJobId() {
         return jobId;
     }
 
@@ -35,12 +35,12 @@ public final class IngestionJobCreated {
         private Builder() {
         }
 
-        public Builder withJobId(final UUID val) {
+        public final Builder withJobId(final UUID val) {
             jobId = val;
             return this;
         }
 
-        public IngestionJobCreated build() {
+        public final IngestionJobCreated build() {
             return new IngestionJobCreated(jobId);
         }
     }

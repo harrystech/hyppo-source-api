@@ -42,19 +42,19 @@ public final class WorkResource {
         metric = builder.metric;
     }
 
-    public Integer getId() {
+    public final Integer getId() {
         return id;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public String getType() {
+    public final String getType() {
         return type;
     }
 
-    public Integer getMetric() {
+    public final Integer getMetric() {
         return metric;
     }
 
@@ -71,27 +71,27 @@ public final class WorkResource {
         private Builder() {
         }
 
-        public Builder withId(int val) {
+        public final Builder withId(int val) {
             id = val;
             return this;
         }
 
-        public Builder withName(String val) {
+        public final Builder withName(String val) {
             name = val;
             return this;
         }
 
-        public Builder withType(String val) {
+        public final Builder withType(String val) {
             type = val;
             return this;
         }
 
-        public Builder withMetric(int val) {
+        public final Builder withMetric(int val) {
             metric = val;
             return this;
         }
 
-        public WorkResource build() {
+        public final WorkResource build() {
             return new WorkResource(this);
         }
     }
