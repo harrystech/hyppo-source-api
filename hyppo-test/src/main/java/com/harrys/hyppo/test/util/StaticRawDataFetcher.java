@@ -6,7 +6,6 @@ import com.harrys.hyppo.source.api.task.RawDataFetcher;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -15,11 +14,11 @@ import java.util.stream.Collectors;
 /**
  * Created by jpetty on 1/5/16.
  */
-public final class StaticRawFileFetcher implements RawDataFetcher {
+public final class StaticRawDataFetcher implements RawDataFetcher {
 
     private final List<URL> resources;
 
-    public StaticRawFileFetcher(final List<URL> resources) {
+    public StaticRawDataFetcher(final List<URL> resources) {
         this.resources = resources;
     }
 
@@ -33,11 +32,11 @@ public final class StaticRawFileFetcher implements RawDataFetcher {
     }
 
 
-    public static StaticRawFileFetcher createWithFile(final File file) {
+    public static StaticRawDataFetcher createWithFile(final File file) {
         return createWithFiles(Collections.singletonList(file));
     }
 
-    public static StaticRawFileFetcher createWithFiles(final List<File> files) {
+    public static StaticRawDataFetcher createWithFiles(final List<File> files) {
         final List<URL> fileUrls = files.stream()
                 .map(File::toURI)
                 .map(uri -> {
@@ -48,19 +47,19 @@ public final class StaticRawFileFetcher implements RawDataFetcher {
                     }
                 })
                 .collect(Collectors.toList());
-        return new StaticRawFileFetcher(fileUrls);
+        return new StaticRawDataFetcher(fileUrls);
     }
 
-    public static StaticRawFileFetcher createWithResource(final String resource) {
+    public static StaticRawDataFetcher createWithResource(final String resource) {
         return createWithResources(Collections.singletonList(resource));
     }
 
-    public static StaticRawFileFetcher createWithResources(final List<String> resources) {
+    public static StaticRawDataFetcher createWithResources(final List<String> resources) {
         final ClassLoader loader = currentClassLoader();
         final List<URL> urlList  = resources.stream()
                 .map(loader::getResource)
                 .collect(Collectors.toList());
-        return new StaticRawFileFetcher(urlList);
+        return new StaticRawDataFetcher(urlList);
     }
 
     private static ClassLoader currentClassLoader() {
