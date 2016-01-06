@@ -70,6 +70,9 @@ public final class RawDataCollector {
             while (-1 != (n = source.read(buffer))) {
                 gzos.write(buffer, 0, n);
             }
+        } finally {
+            try { source.close();
+            } catch (IOException ioe) { } // Ignored
         }
     }
 }
