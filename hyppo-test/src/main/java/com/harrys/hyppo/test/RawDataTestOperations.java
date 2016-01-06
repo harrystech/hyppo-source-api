@@ -38,11 +38,13 @@ public final class RawDataTestOperations<T extends SpecificRecord> {
         return new FetchRawData(task.cloneWithJob(job), files.taskRawDataCollector(task));
     }
 
-    public final List<ProcessRawData<T>> processRawDataOperations(final DataIngestionTask task, final List<File> files, final AvroRecordAppender<T> appender) throws IOException {
-        final DataIngestionTask taskJobFix = task.cloneWithJob(job);
-        return files.stream()
+    public final RawDataProcessing<T> processRawDataOperations(final DataIngestionTask task, final List<File> files) throws IOException {
+        final DataIngestionTask taskJobFix       = task.cloneWithJob(job);
+        final AvroRecordAppender<T> appender     = createAvroRecordAppender(taskJobFix);
+        final List<ProcessRawData<T>> operations = files.stream()
                 .map(f -> new ProcessRawData<>(taskJobFix, f, appender))
                 .collect(Collectors.toList());
+        return new RawDataProcessing<T>(operations, appender);
     }
 
     public final PersistProcessedData<T> persistProcessedDataOperation(final DataIngestionTask task, final File avroFile) {
@@ -65,5 +67,26 @@ public final class RawDataTestOperations<T extends SpecificRecord> {
 
     public final void cleanupOutputFiles() {
         files.cleanAllFiles();
+    }
+
+
+    public static final class RawDataProcessing<T extends SpecificRecord> {
+
+        private final List<ProcessRawData<T>> operations;
+
+        private final AvroRecordAppender<T> appender;
+
+        private RawDataProcessing(final List<ProcessRawData<T>> operations, final AvroRecordAppender<T> appender) {
+            this.operations = operations;
+            this.appender   = appender;
+        }
+
+        public List<ProcessRawData<T>> getOperations() {
+            return operations;
+        }
+
+        public AvroRecordAppender<T> getAppender() {
+            return appender;
+        }
     }
 }

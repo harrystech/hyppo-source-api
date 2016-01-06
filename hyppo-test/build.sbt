@@ -1,6 +1,6 @@
 organization := "com.harrys.hyppo"
 
-name := "hyppo-test"
+name := "hyppo-scala-test"
 
 //  Bring in shared SBT configurations from project root
 Common.buildSettings

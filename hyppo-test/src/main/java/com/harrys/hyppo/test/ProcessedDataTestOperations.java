@@ -1,6 +1,7 @@
 package com.harrys.hyppo.test;
 
 import com.harrys.hyppo.source.api.ProcessedDataIntegration;
+import com.harrys.hyppo.source.api.data.AvroRecordAppender;
 import com.harrys.hyppo.source.api.model.DataIngestionJob;
 import com.harrys.hyppo.source.api.model.DataIngestionTask;
 import com.harrys.hyppo.source.api.task.CreateIngestionTasks;
@@ -36,8 +37,11 @@ public final class ProcessedDataTestOperations<R extends SpecificRecord> {
         return new CreateIngestionTasks(job);
     }
 
-    public final FetchProcessedData<R> fetchProcessedDataOperation(final DataIngestionTask task) throws IOException {
-        return new FetchProcessedData<>(task.cloneWithJob(job), files.createAvroRecordAppender(integration.avroType(), task));
+    public final ProcessedDataFetching<R> fetchProcessedDataOperation(final DataIngestionTask task) throws IOException {
+        final DataIngestionTask jobFix = task.cloneWithJob(job);
+        final AvroRecordAppender<R> appender  = files.createAvroRecordAppender(integration.avroType(), jobFix);
+        final FetchProcessedData<R> operation = new FetchProcessedData<>(jobFix, appender);
+        return new ProcessedDataFetching<>(operation, appender);
     }
 
     public final PersistProcessedData<R> persistProcessedDataOperation(final DataIngestionTask task, final File avroFile) {
@@ -51,5 +55,35 @@ public final class ProcessedDataTestOperations<R extends SpecificRecord> {
 
     public final void cleanupOutputFiles() {
         files.cleanAllFiles();
+    }
+
+
+    public final AvroRecordAppender<R> createAvroRecordAppender(final DataIngestionTask task) throws IOException {
+        return files.createAvroRecordAppender(integration.avroType(), task);
+    }
+
+
+    public final DataIngestionJob getJob(){
+        return job;
+    }
+
+    public static final class ProcessedDataFetching<R extends SpecificRecord> {
+
+        private final FetchProcessedData<R> operation;
+
+        private final AvroRecordAppender<R> appender;
+
+        private ProcessedDataFetching(final FetchProcessedData<R> operation, final AvroRecordAppender<R> appender) {
+            this.operation = operation;
+            this.appender  = appender;
+        }
+
+        public FetchProcessedData<R> getOperation() {
+            return operation;
+        }
+
+        public AvroRecordAppender<R> getAppender() {
+            return appender;
+        }
     }
 }
