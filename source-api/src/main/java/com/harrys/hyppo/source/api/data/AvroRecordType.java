@@ -107,6 +107,11 @@ public abstract class AvroRecordType<T extends SpecificRecord> {
         }
 
         @Override
+        public final int hashCode(){
+            return recordSchema.hashCode() + recordClass.hashCode();
+        }
+
+        @Override
         public final boolean equals(Object check){
             if (check instanceof SimpleAvroRecordType<?>){
                 final SimpleAvroRecordType<?> other = (SimpleAvroRecordType<?>)check;

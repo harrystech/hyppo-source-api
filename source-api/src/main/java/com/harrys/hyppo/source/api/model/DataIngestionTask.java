@@ -62,6 +62,11 @@ public final class DataIngestionTask implements Serializable {
     }
 
     @Override
+    public final int hashCode(){
+        return ingestionJob.hashCode() + taskNumber + taskArguments.hashCode();
+    }
+
+    @Override
     public final boolean equals(Object check){
         if (check instanceof DataIngestionTask){
             final DataIngestionTask other = (DataIngestionTask)check;

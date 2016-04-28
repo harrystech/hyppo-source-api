@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
  * Created by jpetty on 12/21/15.
  */
 public final class InvalidHyppoRequest extends HyppoClientException {
+    private static final long serialVersionUID = 1L;
 
     @JsonProperty("messages")
     private final List<String> messages;
