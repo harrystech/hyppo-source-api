@@ -26,6 +26,8 @@ public final class DataIngestionJob implements Serializable {
     private final Config parameters;
 
     @JsonProperty("startedAt")
+    @JsonSerialize(using = InstantToJson.Serializer.class)
+    @JsonDeserialize(using = InstantToJson.Deserializer.class)
     private final Instant startedAt;
 
     @JsonCreator
