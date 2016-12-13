@@ -46,6 +46,11 @@ public final class IngestionSource implements Serializable {
     }
 
     @Override
+    public final int hashCode(){
+        return name.hashCode() + configuration.hashCode();
+    }
+
+    @Override
     public final boolean equals(final Object other){
         if (other instanceof IngestionSource){
             final IngestionSource otherSource = (IngestionSource)other;

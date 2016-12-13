@@ -7,6 +7,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -25,14 +26,16 @@ public final class DataIngestionJob implements Serializable {
     private final Config parameters;
 
     @JsonProperty("startedAt")
-    private final Date startedAt;
+    @JsonSerialize(using = InstantToJson.Serializer.class)
+    @JsonDeserialize(using = InstantToJson.Deserializer.class)
+    private final Instant startedAt;
 
     @JsonCreator
     public DataIngestionJob(
             @JsonProperty("ingestionSource")    final IngestionSource ingestionSource,
             @JsonProperty("id")                 final UUID id,
             @JsonProperty("parameters")         final Config parameters,
-            @JsonProperty("startedAt")          final Date startedAt
+            @JsonProperty("startedAt")          final Instant startedAt
     ) {
         this.ingestionSource = ingestionSource;
         this.id = id;
@@ -52,8 +55,13 @@ public final class DataIngestionJob implements Serializable {
         return parameters;
     }
 
-    public final Date getStartedAt(){
+    public final Instant getStartedAt(){
         return this.startedAt;
+    }
+
+    @Override
+    public final int hashCode(){
+        return ingestionSource.hashCode() + id.hashCode() + parameters.hashCode() + startedAt.hashCode();
     }
 
     @Override

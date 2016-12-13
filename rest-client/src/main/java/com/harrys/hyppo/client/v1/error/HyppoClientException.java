@@ -6,6 +6,7 @@ import java.io.IOException;
  * Created by jpetty on 12/21/15.
  */
 public class HyppoClientException extends IOException {
+    private static final long serialVersionUID = 1L;
 
     public HyppoClientException(){
         this(null, null);
